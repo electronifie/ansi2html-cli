@@ -1,0 +1,26 @@
+{
+  "name": "ansi2html-cli",
+  "version": "1.0.0",
+  "description": "Converts piped ansi to html using rburns's ansi-to-html.",
+  "bin": "bin/ansi2html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/electronifie/ansi2html-cli.git"
+  },
+  "keywords": [
+    "ansi",
+    "html",
+    "color",
+    "cli"
+  ],
+  "author": "andrew.mckenzie@electronifie.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/electronifie/ansi2html-cli/issues"
+  },
+  "homepage": "https://github.com/electronifie/ansi2html-cli",
+  "dependencies": {
+    "ansi-to-html": "^0.3.0",
+    "argparse": "^1.0.3"
+  }
+}

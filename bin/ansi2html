@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+var ArgumentParser = require('argparse').ArgumentParser;
+var ANSI2HTML = require('ansi-to-html');
+var info = require('../package.json');
+var EOL = require('os').EOL;
+
+var parser = new ArgumentParser({
+  version: info.version,
+  addHelp: true,
+  description: info.description + ' Intended for use in a unix pipeline. e.g. `cat foo.log | ansi2html > foo.html`'
+});
+
+parser.addArgument(['-f', '--foreground'], { help: 'Default foreground color used when reset codes are encountered (e.g #000).', defaultValue: '#333', metavar: 'BG' });
+parser.addArgument(['-b', '--background'], { help: 'Default background color used when reset codes are encountered (e.g #fff).', defaultValue: '#fff', metavar: 'FG' });
+parser.addArgument(['-s', '--style'],      { help: 'Styles to add to the document (e.g. "font-weight: bold; font-family: monospace;" ).', defaultValue: '' });
+parser.addArgument(['--linebreak'],        { help: 'Insert <br/> at the end of each line (generally not necessary as we use white-space:pre by default).', action: 'storeTrue' });
+parser.addArgument(['--no-escape'],        { help: 'Do not escape XML entities.', dest: 'noEscape', action: 'storeTrue' });
+parser.addArgument(['--no-wrap'],          { help: 'Do not add wrapping html tags.', dest: 'noWrap', action: 'storeTrue' });
+
+var args = parser.parseArgs();
+
+var converter = new ANSI2HTML({
+  fg: args.foreground,
+  bg: args.background,
+  newline: false,
+  escapeXML: !args.noEscape,
+  stream: true
+});
+
+var isRunning = false;
+var linebreak = args.linebreak ? '<br/>' : '';
+var addWrappingTags = !args.noWrap;
+var styles = 'font-family: monospace; white-space: pre; background-color:' + args.background + '; color: ' + args.foreground + ';' + args.additionalStyle;
+
+process.stdin.setEncoding('utf8');
+
+process.stdin.on('data', function(chunk) {
+  var isFirstLine = !isRunning;
+  var firstLinePrefix = '';
+
+  if ( isFirstLine && addWrappingTags ) {
+    console.log('<html>');
+    console.log('  <style>');
+    console.log('    * {');
+    styles.split(';').forEach(function (style) {
+      console.log('      ' + style + ';');
+    });
+    console.log('    }');
+    console.log('  </style>');
+    // Apply body tag inline with first line to preserve whitespace in 'pre' mode.
+    firstLinePrefix = '<body>';
+  }
+
+  isRunning = true;
+  if (!chunk) return;
+  chunk.split(EOL).forEach(function (line) {
+    console.log(firstLinePrefix + converter.toHtml(line) + linebreak);
+    firstLinePrefix = '';
+  });
+});
+
+process.stdin.on('end', function(chunk) {
+  if ( addWrappingTags ) {
+    console.log('</body>');
+    console.log('</html>');
+  }
+});
+
+setTimeout(function () {
+  if (isRunning) return;
+  parser.printHelp();
+  process.exit(1);
+}, 100);
