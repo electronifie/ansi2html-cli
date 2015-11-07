@@ -1,6 +1,6 @@
 {
   "name": "ansi2html-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Converts piped ansi to html using rburns's ansi-to-html.",
   "bin": { "ansi2html": "bin/ansi2html" },
   "repository": {
@@ -24,3 +24,4 @@
     "argparse": "^1.0.3"
   }
 }
+
