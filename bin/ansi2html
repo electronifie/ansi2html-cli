@@ -49,7 +49,7 @@ process.stdin.on('data', function(chunk) {
     console.log('    }');
     console.log('  </style>');
     // Apply body tag inline with first line to preserve whitespace in 'pre' mode.
-    firstLinePrefix = '<body id="ansi2html">';
+    firstLinePrefix = '<body><div id="ansi2html">';
   }
 
   isRunning = true;
@@ -62,7 +62,7 @@ process.stdin.on('data', function(chunk) {
 
 process.stdin.on('end', function(chunk) {
   if ( addWrappingTags ) {
-    console.log('</body>');
+    console.log('</div></body>');
     console.log('</html>');
   }
 });
