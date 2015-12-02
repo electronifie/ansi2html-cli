@@ -42,14 +42,14 @@ process.stdin.on('data', function(chunk) {
   if ( isFirstLine && addWrappingTags ) {
     console.log('<html>');
     console.log('  <style>');
-    console.log('    * {');
+    console.log('    #ansi2html, #ansi2html * {');
     styles.split(';').forEach(function (style) {
       console.log('      ' + style + ';');
     });
     console.log('    }');
     console.log('  </style>');
     // Apply body tag inline with first line to preserve whitespace in 'pre' mode.
-    firstLinePrefix = '<body>';
+    firstLinePrefix = '<body id="ansi2html">';
   }
 
   isRunning = true;
